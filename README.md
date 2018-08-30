@@ -1,2 +1,2 @@
-# Lit
+# lit
 living involves technology
