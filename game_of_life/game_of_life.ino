@@ -8,7 +8,7 @@ FASTLED_USING_NAMESPACE
 
 #define DATA_PIN 3
 #define LED_TYPE WS2811
-#define COLOR_ORDER GRB
+#define COLOR_ORDER RBG
 #define WIDTH 15
 #define HEIGHT 20
 #define NUM_LEDS WIDTH * HEIGHT
@@ -34,7 +34,7 @@ void setup() {
   initGameOfLife();
 }
   
-void loop() {      
+void loop() {        
   gameOfLife();
 }
 
@@ -44,6 +44,12 @@ void initGameOfLife() {
       cells[x][y] = random(DEAD, ALIVE + 1);
     }  
   }
+
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CRGB(255, 255, 255);
+  }
+
+  FastLED.show();
 }
 
 void gameOfLife() {
@@ -74,25 +80,22 @@ void applyRules() {// TODO: optimize! We cycle through all of the led's twice (h
 }
 
 void draw() {
-  for (int colorStep=0; colorStep < 256; colorStep++) {
-    int fadeDeath = 255 - colorStep;
-
-    for (int y = 0; y < HEIGHT; y++) {
+      for (int y = 0; y < HEIGHT; y++) {
       for (int x = 0; x < WIDTH; x++) {
         int s = cells[x][y];
         int i = index(x, y);
   
         if (s == DEAD) {
-          leds[i] = CRGB(fadeDeath, fadeDeath, fadeDeath); 
+          leds[i].nscale8( 64 );// = CRGB(0, 0, 0); 
         } else {
-          leds[i] = CRGB(colorStep, colorStep, colorStep); 
+          leds[i].nscale8( 192 );// = CRGB(255, 255, 255); 
         }
+
+        Serial.println(leds[i]);
       }  
     }
-  
-    FastLED.show();
-    //delay(10); 
-  }
+  FastLED.show();
+  //delay(1000);
 }
 
 void coordinate(int i, int *x, int *y) {
